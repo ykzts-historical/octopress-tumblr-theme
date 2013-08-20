@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"{block:IfHostName} id="{text:Host Name}"{/block:IfHostName}{block:IfLang} lang="{text:Lang}" xml:lang="{text:Lang}"{/block:IfLang}>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="application/javascript" />{block:Description}
+<meta name="description" content="{MetaDescription}" />{/block:Description}{block:IndexPage} {block:Pagination}{block:PreviousPage}
+<meta name="robots" content="noindex" />{/block:PreviousPage}{/block:Pagination}{/block:IndexPage} 
+<meta name="text:Lang" content="" />
+<meta name="text:Author" content="" />
+<meta name="text:Author Link" content="" />
+<meta name="text:Host Name" content="" />
+<meta name="text:Time Zone" content="+00:00" />
+<meta name="text:Static Path" content="/static" />
+<meta name="text:Ad Text" content="" />
+<meta name="text:Ad Link" content="" />
+<meta name="text:Ad Image URI" content="" />
+<meta name="text:Google Analytics ID" content="" />{block:PermalinkPage}{block:Posts}
+<meta name="keywords" content="{PostAuthorName}{block:HasTags}{block:Tags}, {Tag}{/block:Tags}{/block:HasTags}" />
+<link href="{Permalink}" rel="canonical"{block:Title} title="{Title}"{/block:Title} />{/block:Posts}{/block:PermalinkPage}{block:Pagination}{block:PreviousPage}
+<link href="{PreviousPage}" rel="prev" title="{lang:Prev}" />{/block:PreviousPage}{block:NextPage}
+<link href="{NextPage}" rel="next" title="{lang:Next}" />{/block:NextPage}{/block:Pagination}{block:PermalinkPagination}{block:PreviousPost}
+<link href="{PreviousPost}" rel="prev" title="{lang:Prev post}" />{/block:PreviousPost}{block:NextPost}
+<link href="{NextPost}" rel="next" title="{lang:Next post}" />{/block:NextPost}{/block:PermalinkPagination}
+<link href="{Favicon}" rel="icon" type="image/png" />
+<link href="{text:Static Path}/octopress-tumblr-theme.css" rel="stylesheet" type="text/css" />
+<link href="{RSS}" rel="alternate" type="application/rss+xml" />
+<style type="text/css">
+/* custom CSS */
+{CustomCSS}
+</style>
+<title>{block:IndexPage} {block:Pagination}{block:PreviousPage}{lang:Page CurrentPage of TotalPages} - {/block:PreviousPage}{/block:Pagination}{/block:IndexPage}{block:SearchPage}Search: {SearchQuery} - {/block:SearchPage}{block:TagPage}Tag: {Tag} - {/block:TagPage}{block:PermalinkPage}{block:Posts}{block:PostTitle}{PostTitle}{/block:PostTitle}{block:Photo}{PhotoAlt}{/block:Photo} - {/block:Posts}{/block:PermalinkPage}{Title}</title>{block:IfGoogleAnalyticsID}
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', '{text:Google Analytics ID}']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>{/block:IfGoogleAnalyticsID}
+</head>
+<body{block:SearchPage} class="search"{/block:SearchPage}{block:TagPage} class="tag"{/block:TagPage}{block:PermalinkPage}{block:Posts} class="post {PostType}"{/block:Posts}{/block:PermalinkPage}>
+<div class="header">
+<h1><a href="/">{Title}</a></h1>{block:Description}
+<p class="description">{Description}</p>{/block:Description}
+</div>
+<div class="navigation">
+<ul class="subscription">
+<li><a href="{RSS}" title="{lang:Get the RSS}" type="application/rss+xml">{lang:RSS}</a></li>
+</ul>
+<form action="/search" method="get">
+<fieldset>
+<input class="search" name="q" type="text" value="{SearchQuery}" />
+</fieldset>
+</form>
+<ul class="main-navigation">
+<li><a href="/">Blog</a></li>
+<li><a href="/archive" title="{lang:Browse the archive}">{lang:Archive}</a></li>{block:HasPages}{block:Pages}
+<li><a href="{URL}">{Label}</a></li>{/block:Pages}{/block:HasPages}
+</ul>
+</div>
+<div class="main">
+<div class="content">{block:SearchPage}{block:NoSearchResults}
+<div class="article">
+<h2>{lang:Sorry no results for SearchQuery}</h2>
+<p>{lang:Sorry no search results found}</p>{block:IfHostName}
+<p><a href="https://www.google.com/search?q=site:{text:Host Name}+{URLSafeSearchQuery}">Search on the Google</a>.</p>{/block:IfHostName}
+</div>{/block:NoSearchResults}{/block:SearchPage}{block:Posts}
+<div class="article">
+<div class="header">{block:Text}{block:Title}
+<h2>{block:IndexPage}<a href="{Permalink}" tilte="{lang:Permalink for this post}">{/block:IndexPage}{Title}{block:IndexPage}</a>{/block:IndexPage}</h2>{/block:Title}{/block:Text}{block:Photo}
+<h2>{block:IndexPage}<a href="{Permalink}" tilte="{lang:Permalink for this post}">{/block:IndexPage}{PhotoAlt}{block:IndexPage}</a>{/block:IndexPage}</h2>{/block:Photo}
+<p class="meta">{block:Date}
+<span class="time" title="{Year}-{MonthNumberWithZero}-{DayOfMonthWithZero}T{24HourWithZero}:{Minutes}:{Seconds}{block:IfTimeZone}{text:Time Zone}{/block:IfTimeZone}">{ShortMonth} {DayOfMonth}<span>{DayOfMonthSuffix}</span>, {Year}</span>{/block:Date}
+</p>
+</div>{block:Text}
+{Body}
+{/block:Text}{block:Photo}
+<p>{LinkOpenTag}<img src="{PhotoURL-500}" alt="{PhotoAlt}" />{LinkCloseTag}</p>{block:Caption}
+{Caption}{/block:Caption}{/block:Photo}{block:PermalinkPage}
+<div class="footer">
+<p class="meta">
+<span class="author">{lang:Posted by PostAuthorName 2}</span>{block:Date}
+<span class="time" title="{Year}-{MonthNumberWithZero}-{DayOfMonthWithZero}T{24HourWithZero}:{Minutes}:{Seconds}{block:IfTimeZone}{text:Time Zone}{/block:IfTimeZone}">{ShortMonth} {DayOfMonth}<span>{DayOfMonthSuffix}</span>, {Year}</span>{/block:Date}
+</p>{block:PermalinkPagination}
+<p class="meta">{block:PreviousPost}
+<a href="{PreviousPost}" rel="prev">&laquo; {lang:Prev post}</a>{/block:PreviousPost}{block:NextPost}
+<a href="{NextPost}" rel="next">{lang:Next post} &raquo;</a>{block:NextPost}
+</p>{/block:PermalinkPagination}
+</div>{/block:PermalinkPage}
+</div>{/block:Posts}{block:IndexPage}
+<div class="pagination">
+<a href="/archive">Blog Archives</a>
+</div>{/block:IndexPage}
+</div>
+<div class="aside">
+<div id="recent-posts">
+<h3>Recent Posts</h3>
+<p><a href="/achive">Archive</a></p>
+</div>{block:IfAdText}
+<div id="ad">
+<h3>ad</h3>
+<p>{block:IfAdLink}<a href="{text:Ad Link}">{/block:IfAdLink}{block:IfAdImageURI}<img alt="{/block:IfAdImageURI}{text:Ad Text}{block:IfAdImageURI}" src="{text:Ad Image URI}" />{/block:IfAdImageURI}{block:IfAdLink}</a>{/block:IfAdLink}</p>
+</div>{/block:IfAdText}
+</div>
+</div>
+<div class="footer">
+<p>Copyright &copy; {CopyrightYears}{block:IfAuthor} {block:IfAuthorLink}<a href="{text:Author Link}">{/block:IfAuthorLink}{text:Author}{block:IfAuthorLink}</a>{/block:IfAuthorLink}{/block:IfAuthor} - <span class="credit">{lang:Powered by Tumblr 2}</span></p>
+</div>
+<script src="{text:Static Path}/octopress-tumblr-theme.js" type="application/javascript"></script>
+</body>
+</html>
