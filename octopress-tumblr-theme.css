@@ -336,6 +336,7 @@ body > .footer p:last-child {
   background-color: #f2f2f2;
   background-image: url("/image/noise.png");
   display: table;
+  table-layout: fixed;
 }
 
 .main > .content,
