@@ -444,8 +444,10 @@ body.post #recent-posts li:nth-child(5) ~ li {
   border-top: thin dotted #bfbfbf;
 }
 
-.article > p {
+.article > p,
+.article > blockquote p {
   text-align: justify;
+  text-indent: 1em;
 }
 
 .article .header {
