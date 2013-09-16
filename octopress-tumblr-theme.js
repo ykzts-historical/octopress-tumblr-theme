@@ -196,19 +196,23 @@
     proto.showingRecentlyPosts.insertRecentPosts.removeChildNodes = function removeChildNodes() {
       var recentPostsContainer = this;
       var document = recentPostsContainer.ownerDocument;
-      var headline = recentPostsContainer.querySelector([
-        'h1:first-child',
-        'h2:first-child',
-        'h3:first-child',
-        'h4:first-child',
-        'h5:first-child',
-        'h6:first-child'
-      ].join(', '));
+      var headline = recentPostsContainer.querySelector(removeChildNodes.headlinesSelector);
       var range = document.createRange();
       range.setStartAfter(headline);
       range.setEndAfter(recentPostsContainer.lastChild);
       range.deleteContents();
     };
+
+    proto.showingRecentlyPosts.insertRecentPosts.removeChildNodes.headlinesSelector = [
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6'
+    ].map(function(selector) {
+      return selector + ':first-child';
+    }).join(', ');
   })(SiteScript.prototype);
 
   function main(window) {
