@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013 Yamagishi Kazutoshi
+ * Copyright (c) 2013-2015 Yamagishi Kazutoshi
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -21,7 +21,145 @@
 (function(global) {
   'use strict';
 
+  var undefined;
   var window = global.window || {};
+  var HEADLINE_SELECTOR = [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6'
+  ].map(function(selector) {
+    return selector + ':first-child';
+  }).join(', ');
+
+  function removeChildNodes(node) {
+    var document = node.ownerDocument;
+    var headline = node.querySelector(HEADLINE_SELECTOR);
+    var lastChild = node.querySelector(':last-child');
+    var range = document.createRange();
+    range.setStartAfter(headline);
+    range.setEndBefore(lastChild);
+    range.deleteContents();
+    return lastChild;
+  };
+
+  function QueryString() {
+  }
+
+  QueryString.stringify = function stringify(value) {
+    if (typeof value !== 'object') {
+      return '' + value;
+    }
+    var pairs = [];
+    var pair, key, item;
+    for (key in value) {
+      if (!value.hasOwnProperty(key) || !(item = value[key])) {
+        continue;
+      }
+      pair = [encodeURIComponent(key)];
+      if (typeof item !== 'boolean') {
+        pair.push(encodeURIComponent(item));
+      }
+      pairs.push(pair.join('='));
+    }
+    return pairs.join('&');
+  };
+
+  function JSONHttpRequest() {
+    this.method = undefined;
+    this.uri = undefined;
+    this.response = null;
+    this.responseText = null;
+    this.listeners = [];
+  };
+
+  (function(proto) {
+    function executeListeners(event, listeners) {
+      var len, i, listener;
+      if (typeof listeners !== 'undefined') {
+        len = listeners.length;
+        for (i = 0; i < len; ++i) {
+          listener = listeners[i];
+          listen.call(this, event, listener);
+        }
+      }
+    }
+
+    function insertScript(uri) {
+      var document = window.document;
+      var body = document.getElementsByTagName('body')[0];
+      var script = document.createElement('script');
+      script.setAttribute('src', uri);
+      body.appendChild(script);
+      return script;
+    }
+
+    function listen(event, listener) {
+      if (listener && typeof listener.handleEvent === 'function') {
+        listener = listener.handleEvent.bind(listener);
+      }
+      if (typeof listener === 'function') {
+        listener.call(this, event);
+      }
+    }
+
+    proto.addEventListener = function addEventListener(type, handler) {
+      if (typeof this.listeners[type] === 'undefined') {
+        this.listeners[type] = [];
+      }
+      this.listeners[type].push(handler);
+    };
+
+    proto.open = function open(method, uri) {
+      this.method = method;
+      this.uri = uri;
+    };
+
+    proto.send = function send() {
+      var listeners = this.listeners;
+      var callbackName = '____________callback' + (new Date()).getTime();
+      var uri = this.uri;
+      uri += [
+        uri.indexOf('?') >= 0 ? '&' : '?',
+        'callback=',
+        encodeURIComponent(callbackName)
+      ].join('');
+      var reset = function reset() {};
+      var request = this;
+      global[callbackName] = function successHandler(parsedJson) {
+        var successListeners = listeners['load'];
+        request.response = parsedJson;
+        request.responseText = JSON.stringify(parsedJson);
+        executeListeners.call(request, {
+          target: request,
+          type: 'load'
+        }, successListeners);
+        reset();
+      };
+      var errorHandler = function errorHandler(event) {
+        var target = event.target;
+        var errorListeners = listeners['error'];
+        target.removeEventListener('error', errorHandler);
+        executeListeners.call(request, {
+          target: request,
+          type: 'error'
+        }, errorListeners);
+        reset();
+      };
+      var script = insertScript(uri);
+      reset = function reset() {
+        try {
+          delete global[callbackName];
+        } catch (error) {
+          global[callbackName] = undefined;
+        }
+        script.parentNode.removeChild(script);
+      };
+      script.addEventListener('error', errorHandler);
+    };
+  })(JSONHttpRequest.prototype);
 
   function RecentlyPosts(successHandler, errorHandler) {
     this.successHandler = successHandler;
@@ -104,6 +242,56 @@
     };
   })(RecentlyPosts.prototype);
 
+  function PopularPosts(successHandler, errorHandler) {
+    this.successHandler = successHandler;
+    this.errorHandler = errorHandler;
+  }
+
+  (function(proto) {
+    proto.get = function get(blogUri) {
+      var apiUri = this.getApiUri(blogUri);
+      var client = new JSONHttpRequest();
+      client.open('get', apiUri);
+      client.addEventListener('load', this);
+      client.addEventListener('error', this);
+      client.send(null);
+    };
+
+    proto.getApiUri = function getApiUri(uri) {
+      var baseUri = 'http://b.hatena.ne.jp/entrylist/json';
+      var queryString = QueryString.stringify({
+        sort: 'count',
+        url: uri
+      });
+      return [
+        baseUri,
+        queryString
+      ].join('?');
+    };
+
+    proto.handleEvent = function handleEvent(event) {
+      if (event.type !== 'load') {
+        return;
+      }
+      var client = event.target;
+      var response = client.response;
+      var parsedResponse = this.parseResponse(response);
+      this.successHandler.call(this, parsedResponse);
+      return;
+    };
+
+    proto.parseResponse = function parseResponse(array) {
+      return (array || []).map(function(object) {
+        var title = object.title;
+        title += ' (' + object.count + ')';
+        return {
+          title: title,
+          uri: object.link
+        };
+      });
+    };
+  })(PopularPosts.prototype);
+
   function SiteScript(window) {
     window.addEventListener('DOMContentLoaded', this, false);
   }
@@ -127,17 +315,44 @@
 
     proto.getMethodNames = function getMethodNames(event) {
       var type = event.type;
-      var methodNames = (getMethodNames.list[type] || '').split(',');
+      var methodNames = getMethodNames.list[type] || [];
       return methodNames;
     };
 
     proto.getMethodNames.list = {
-      DOMContentLoaded: 'setPlaceholder,showingRecentlyPosts'
+      DOMContentLoaded: [
+        'setPlaceholder',
+        'showingPopularPosts',
+        'showingRecentlyPosts'
+      ]
     };
 
     proto.handleEvent = function handleEvent(event) {
       var handler = this.getEventHandler(event);
       return handler.apply(this, arguments);
+    };
+
+    proto.insertPosts = function insertPosts(container, entries) {
+      var document = container.ownerDocument;
+      var listElement = document.createElement('ol');
+      var baseListItemElement = (function() {
+        var listItemElement = document.createElement('li');
+        var anchorElement = document.createElement('a');
+        listItemElement.appendChild(anchorElement);
+        return listItemElement;
+      })();
+      (entries || []).forEach(function(entry) {
+        var listItemElement = baseListItemElement.cloneNode(true);
+        var anchorElement = listItemElement.getElementsByTagName('a')[0];
+        anchorElement.setAttribute('href', entry.uri);
+        anchorElement.textContent = entry.title;
+        listElement.appendChild(listItemElement);
+      });
+      if ((listElement.childNodes || []).length <= 0) {
+        return;
+      }
+      var lastChild = removeChildNodes(container);
+      container.insertBefore(listElement, lastChild);
     };
 
     proto.setPlaceholder = function setPlaceholder(event) {
@@ -146,6 +361,19 @@
       Array.prototype.forEach.call(textFields, function(textField) {
         textField.placeholder = 'Search';
       });
+    };
+
+    proto.showingPopularPosts = function showingPopularPosts(event) {
+      var document = event.target;
+      var blogUri = (function(location) {
+        var uri = location.href;
+        var blogUri = (uri.match(/^(https?:\/\/[^\/]+\/).*$/) || [])[1];
+        return blogUri;
+      })(document.defaultView && document.defaultView.location);
+      var popularPostsContainer = document.getElementById('popular-posts');
+      var successHandler = this.insertPosts.bind(this, popularPostsContainer);;
+      var popularPosts = new PopularPosts(successHandler);
+      popularPosts.get(blogUri);
     };
 
     proto.showingRecentlyPosts = function showingRecentlyPosts(event) {
@@ -164,55 +392,10 @@
         return feedUri;
       })();
       var recentPostsContainer = document.getElementById('recent-posts');
-      var successHandler = showingRecentlyPosts.insertRecentPosts.bind(recentPostsContainer);
+      var successHandler = this.insertPosts.bind(this, recentPostsContainer);
       var recentlyPosts = new RecentlyPosts(successHandler);
       recentlyPosts.get(feedUri);
     };
-
-    proto.showingRecentlyPosts.insertRecentPosts = function insertRecentPosts(entries) {
-      var recentPostsContainer = this;
-      var document = recentPostsContainer.ownerDocument;
-      var listElement = document.createElement('ol');
-      var baseListItemElement = (function() {
-        var listItemElement = document.createElement('li');
-        var anchorElement = document.createElement('a');
-        listItemElement.appendChild(anchorElement);
-        return listItemElement;
-      })();
-      (entries || []).forEach(function(entry) {
-        var listItemElement = baseListItemElement.cloneNode(true);
-        var anchorElement = listItemElement.getElementsByTagName('a')[0];
-        anchorElement.setAttribute('href', entry.uri);
-        anchorElement.textContent = entry.title;
-        listElement.appendChild(listItemElement);
-      });
-      if ((listElement.childNodes || []).length <= 0) {
-        return;
-      }
-      insertRecentPosts.removeChildNodes.call(recentPostsContainer);
-      recentPostsContainer.appendChild(listElement);
-    };
-
-    proto.showingRecentlyPosts.insertRecentPosts.removeChildNodes = function removeChildNodes() {
-      var recentPostsContainer = this;
-      var document = recentPostsContainer.ownerDocument;
-      var headline = recentPostsContainer.querySelector(removeChildNodes.headlinesSelector);
-      var range = document.createRange();
-      range.setStartAfter(headline);
-      range.setEndAfter(recentPostsContainer.lastChild);
-      range.deleteContents();
-    };
-
-    proto.showingRecentlyPosts.insertRecentPosts.removeChildNodes.headlinesSelector = [
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6'
-    ].map(function(selector) {
-      return selector + ':first-child';
-    }).join(', ');
   })(SiteScript.prototype);
 
   function main(window) {

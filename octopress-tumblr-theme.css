@@ -2,7 +2,7 @@
  * original: https://github.com/imathis/octopress
  *
  * Copyright (c) 2009-2013 Brandon Mathis
- * Copyright (c) 2013 Yamagishi Kazutoshi
+ * Copyright (c) 2013-2015 Yamagishi Kazutoshi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -419,6 +419,10 @@ body > .footer p:last-child {
   font-weight: bold;
 }
 
+.main > .aside ol + p:last-child {
+  text-align: right;
+}
+
 body > .main .content {
   background-color: #f2f2f2;
   background-color: #f8f8f8;
@@ -431,7 +435,9 @@ body.post > .main .content {
 }
 
 #recent-posts li:nth-child(10) ~ li,
-body.post #recent-posts li:nth-child(5) ~ li {
+#popular-posts li:nth-child(10) ~ li,
+body.post #recent-posts li:nth-child(5) ~ li,
+body.post #popular-posts li:nth-child(5) ~ li {
   display: none;
 }
 
