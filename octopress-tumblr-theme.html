@@ -16,6 +16,8 @@
 <meta name="text:Ad Text" content="" />
 <meta name="text:Ad Link" content="" />
 <meta name="text:Ad Image URI" content="" />
+<meta name="text:Ad In Sidebar" content="" />
+<meta name="text:Ad In Article" content="" />
 <meta name="text:Google Analytics ID" content="" />{block:PermalinkPage}{block:Posts}
 <meta name="keywords" content="{PostAuthorName}{block:HasTags}{block:Tags}, {Tag}{/block:Tags}{/block:HasTags}" />
 <link href="{Permalink}" rel="canonical"{block:Title} title="{Title}"{/block:Title} />{/block:Posts}{/block:PermalinkPage}{block:Pagination}{block:PreviousPage}
@@ -86,7 +88,10 @@ _gaq.push(['_trackPageview']);
 <p class="meta">
 <span class="author">{lang:Posted by PostAuthorName 2}</span>{block:Date}
 <span class="time" title="{Year}-{MonthNumberWithZero}-{DayOfMonthWithZero}T{24HourWithZero}:{Minutes}:{Seconds}{block:IfTimeZone}{text:Time Zone}{/block:IfTimeZone}">{ShortMonth} {DayOfMonth}<span>{DayOfMonthSuffix}</span>, {Year}</span>{/block:Date}
-</p>{block:PermalinkPagination}
+</p>{block:IfAdInArticle}
+<p>
+{text:Ad In Article}
+</p>{/block:IfAdInArticle}{block:PermalinkPagination}
 <p class="meta">{block:PreviousPost}
 <a href="{PreviousPost}" rel="prev">&laquo; {lang:Prev post}</a>{/block:PreviousPost}{block:NextPost}
 <a href="{NextPost}" rel="next">{lang:Next post} &raquo;</a>{block:NextPost}
@@ -105,11 +110,11 @@ _gaq.push(['_trackPageview']);
 <div id="popular-posts">
 <h3>Popular Posts</h3>
 <p><a href="http://b.hatena.ne.jp/entrylist?url={URLEncodedBlogURL}&amp;sort=count">Hatena Bookmark</a></p>
-</div>{block:IfAdText}
-<div id="ad">
-<h3>ad</h3>
-<p>{block:IfAdLink}<a href="{text:Ad Link}">{/block:IfAdLink}{block:IfAdImageURI}<img alt="{/block:IfAdImageURI}{text:Ad Text}{block:IfAdImageURI}" src="{text:Ad Image URI}" />{/block:IfAdImageURI}{block:IfAdLink}</a>{/block:IfAdLink}</p>
-</div>{/block:IfAdText}
+</div>
+<div id="ad">{block:IfAdText}
+<p>{block:IfAdLink}<a href="{text:Ad Link}">{/block:IfAdLink}{block:IfAdImageURI}<img alt="{/block:IfAdImageURI}{text:Ad Text}{block:IfAdImageURI}" src="{text:Ad Image URI}" />{/block:IfAdImageURI}{block:IfAdLink}</a>{/block:IfAdLink}</p>{/block:IfAdText}{block:IfAdInSidebar}
+<p>{text:Ad In Sidebar}</p>{/block:IfAdInSidebar}
+</div>
 </div>
 </div>
 <div class="footer">
