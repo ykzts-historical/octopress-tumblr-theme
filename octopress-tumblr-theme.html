@@ -113,7 +113,9 @@ _gaq.push(['_trackPageview']);
 </div>
 <div id="ad">{block:IfAdText}
 <p>{block:IfAdLink}<a href="{text:Ad Link}">{/block:IfAdLink}{block:IfAdImageURI}<img alt="{/block:IfAdImageURI}{text:Ad Text}{block:IfAdImageURI}" src="{text:Ad Image URI}" />{/block:IfAdImageURI}{block:IfAdLink}</a>{/block:IfAdLink}</p>{/block:IfAdText}{block:IfAdInSidebar}
-<p>{text:Ad In Sidebar}</p>{/block:IfAdInSidebar}
+<p>
+{text:Ad In Sidebar}
+</p>{/block:IfAdInSidebar}
 </div>
 </div>
 </div>
