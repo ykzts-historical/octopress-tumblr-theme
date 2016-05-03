@@ -213,7 +213,7 @@
         return separatedTagName.length > 1 ?
           separatedTagName.slice(1).join(':') : tagName;
       })(rootElement.tagName);
-      var namespaceUri = rootElement.namespaceURI;
+      var namespaceUri = rootElement.namespaceURI || null;
       if (localName === 'rss' && namespaceUri === null) {
         return this.parseRss2.apply(this, arguments);
       } else if (localName === 'RDF' && namespaceUri === RecentlyPosts.RDF_NAMESPACE_URI) {
