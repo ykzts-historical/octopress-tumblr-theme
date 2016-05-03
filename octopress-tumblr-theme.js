@@ -208,7 +208,11 @@
 
     proto.parseResponse = function parseResponse(xml) {
       var rootElement = xml.documentElement;
-      var localName = rootElement.localName;
+      var localName = rootElement.localName || (function(tagName) {
+        var separatedTagName = (tagName || '').split(':');
+        return separatedTagName.length > 1 ?
+          separatedTagName.slice(1).join(':') : tagName;
+      })(rootElement.tagName);
       var namespaceUri = rootElement.namespaceURI;
       if (localName === 'rss' && namespaceUri === null) {
         return this.parseRss2.apply(this, arguments);
