@@ -225,18 +225,17 @@
     };
 
     proto.parseRss2 = function parseRss2(xml) {
-      var items = xml.querySelectorAll('item');
+      var items = xml.getElementsByTagName('item');
       return Array.prototype.map.call(items, this.parseRss2Item);
     };
 
     proto.parseRss2Item = function parseRss2Item(item) {
-      var uri = item.getElementsByTagName('link')[0].textContent;
-      var title = item.getElementsByTagName('title')[0].textContent;
-      var summary = item.getElementsByTagName('description')[0].textContent;
-      var date = (function() {
-        var pubDate = item.getElementsByTagName('pubDate')[0].textContent;
+      var uri = item.getElementsByTagName('link')[0].firstChild.nodeValue;
+      var title = item.getElementsByTagName('title')[0].firstChild.nodeValue;
+      var summary = item.getElementsByTagName('description')[0].firstChild.nodeValue;
+      var date = (function(pubDate) {
         return new Date(pubDate);
-      })();
+      })(item.getElementsByTagName('pubDate')[0].firstChild.nodeValue);
       return {
         uri: uri,
         title: title,
