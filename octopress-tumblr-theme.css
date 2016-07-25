@@ -29,7 +29,7 @@ html {
   margin: 0;
   padding: 0;
   background-color: #252525;
-  background-image: url("/image/line-tile.png");
+  background-image: url("./image/line-tile.png");
   color: #222222;
   font-size: 100%;
   line-height: 1;
@@ -236,11 +236,11 @@ body > .navigation .subscription li a[type="application/rss+xml"] {
 
 body > .navigation .subscription li a[type="application/rss+xml"],
 body > .navigation .subscription li a[type="application/rss+xml"]::after {
-  -webkit-mask-image: url("/image/rss.png");
-  -moz-mask-image: url("/image/rss.png");
-  -ms-mask-image: url("/image/rss.png");
-  -o-mask-image: url("/image/rss.png");
-  mask-image: url("/image/rss.png");
+  -webkit-mask-image: url("./image/rss.png");
+  -moz-mask-image: url("./image/rss.png");
+  -ms-mask-image: url("./image/rss.png");
+  -o-mask-image: url("./image/rss.png");
+  mask-image: url("./image/rss.png");
   -webkit-mask-repeat: no-repeat;
   -moz-mask-repeat: no-repeat;
   -ms-mask-repeat: no-repeat;
@@ -342,7 +342,7 @@ body > .footer p:last-child {
   width: 100%;
   border-bottom: thin solid #bfbfbf;
   background-color: #f2f2f2;
-  background-image: url("/image/noise.png");
+  background-image: url("./image/noise.png");
   display: table;
   table-layout: fixed;
 }
@@ -426,7 +426,7 @@ body > .footer p:last-child {
 body > .main .content {
   background-color: #f2f2f2;
   background-color: #f8f8f8;
-  background-image: url("/image/noise.png");
+  background-image: url("./image/noise.png");
 }
 
 body.post > .main .content {
